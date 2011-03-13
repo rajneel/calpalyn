@@ -1,1 +1,3 @@
-Welcome to Calpalyn:Quaternary Paleoecology Lab Development WebSite
+<div id="home">
+    This is the home page
+</div>
