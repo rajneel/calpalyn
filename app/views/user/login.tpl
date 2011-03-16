@@ -16,7 +16,6 @@
 		});
     });
 
-  
     $(function() {
 		$( "button, input:submit, a", ".create" ).button();
 		$( "a", ".create" ).click(function() { return false; });

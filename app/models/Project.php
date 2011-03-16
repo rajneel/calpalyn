@@ -30,6 +30,7 @@ class Project extends Pfw_Model
     public function setupAssociations() 
     {
         // set up any associations here
+     
     }    
     
     public function validate($save_method) {
@@ -42,6 +43,7 @@ class Project extends Pfw_Model
         }
         return $pfv->success();
     }
+
     
     
     
@@ -65,4 +67,5 @@ class Project extends Pfw_Model
 
 class Project_QueryObject extends Pfw_Model_QueryObject
 {
-}
+    
+} 

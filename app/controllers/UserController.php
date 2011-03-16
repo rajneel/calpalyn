@@ -25,17 +25,25 @@ Pfw_Loader::loadModel('User');
 
 class UserController extends Prj_Controller_Standard 
 {
+    public $access_allowed = true;
 
     public function __construct()
     {
         parent::__construct();
         // do any view initialization in here
 		$view = $this->getView();
+        $view->addCssLink('custom-theme/jquery-ui-1.8.10.custom.css');
+        $view->addJsLink('jquery-1.4.4.min.js');
+        $view->addJsLink('jquery.dataTables.min.js');
+		#$view->addJsLink('jquery.simplemodal-1.3.4.min.js');
+        $view->addJsLink('custom-theme/jquery-ui-1.8.10.custom.min.js');
+
     }
 
     function indexAction() {
         $view = $this->getView();
-        $view->display(array('layout' => 'layouts/bare.tpl', 'body' => 'user/login.tpl'));
+        $view->assign('site_title','CalPalyn: Login Page');
+        $view->display(array('layout' => 'layouts/main.tpl', 'body' => 'user/login.tpl'));
     }
     
     /*
@@ -48,21 +56,19 @@ class UserController extends Prj_Controller_Standard
 		if ($this->isPost()) 
 		{
 			$user->formSetProperties($this->getParam('user'));
-			
-	    	$username = $user->username;
+            error_log("user email is ".$user->email." and password is ".$user->password);
+	    	$email = $user->email;
 	    	$password = $user->password;
-
+            $user = $user->login($email,$password);
+            #objp($user);
 	    	if (isset($user->id)) 
 	    	{
 	    		# user exists
 	    		Pfw_Session::set('is_logged_in',true);
-	    		Pfw_Session::set('login_id',$user->id);
-                
-	    		
-                
+	    		Pfw_Session::set('login_id',$user->id);                   
 		    	if(isset($_REQUEST['redir']) and !empty($_REQUEST['redir']))
 		    	{
-		    		$this->redirect($_REQUEST['redir']);
+                    $this->redirect($_REQUEST['redir']);
 		    	}
 		    	else
 		    	{
@@ -82,8 +88,11 @@ class UserController extends Prj_Controller_Standard
 		  	
     	$view->assign('redir', $fromUrl);
     	$view->assign('user', $user);
-        $view->display(array('layout' => 'layouts/bare.tpl', 'body' => 'user/login.tpl'));
+        $view->assign('site_title','CalPalyn: Login Page');
+        $view->display(array('layout' => 'layouts/main.tpl', 'body' => 'user/login.tpl'));
+
     }
+    
     
     /**
      * Logout

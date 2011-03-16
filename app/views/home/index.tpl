@@ -19,7 +19,7 @@
         "bServerSide" : true,
         "bPaginate": false,
         "bFilter": false,
-		"sAjaxSource": '/home/json-list-projects',
+		"sAjaxSource": '/project/json-list-projects',
 		"sPaginationType": "full_numbers"
         });
     } );
@@ -29,6 +29,34 @@
 		$( "a", ".create" ).click(function() { return false; });
 	});
 </script>
+
+<style>
+    a.tip {
+        position: relative;
+    }
+
+    a.tip span {
+        display: none;
+        position: absolute;
+        bottom: 20px;
+        left: -10px;
+        width: 140px;
+        padding: 5px;
+        z-index: 100;
+        background: #000;
+        color: #fff;
+        -moz-border-radius: 5px; /* this works only in camino/firefox */
+        -webkit-border-radius: 5px; /* this is just for Safari */
+    }
+
+    a:hover.tip {
+        font-size: 99%; /* this is just for IE */
+    }
+
+    a:hover.tip span {
+        display: block;
+    }
+</style>
 {/literal}
 <div id="home">
     <div id="project">
@@ -39,14 +67,18 @@
                     <tr>
                         <th>Project Id</th>
                         <th>Project Name</th>
+                        <th>Project Owner</th>
                         <th>Project Description</th>
+                        <th>Project Data</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>11</td>
                         <td>22</td>
+                        <td>222</td>
                         <td>33</td>
+                        <td>44</td>
                     </tr>
                 </tbody>
              </table>

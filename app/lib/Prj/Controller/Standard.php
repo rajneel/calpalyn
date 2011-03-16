@@ -74,4 +74,13 @@ class Prj_Controller_Standard extends Pfw_Controller_Standard
        		$view->assign('is_logged_in', true);
        	}
     }
+
+    function sendOutput($output,$format='json') {
+        ob_flush();
+        if ($format == 'json') {
+            $data = json_encode($output);
+            header("Content-Type: application/json");
+        }
+        echo $data;
+    } 
 }

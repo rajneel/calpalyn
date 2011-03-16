@@ -1,7 +1,7 @@
 <?php return array(
 
-'webhost' => 'My Web Host',
-'site_title' => 'My Site Title',
+'webhost' => 'calpalyn.berkeley.edu',
+'site_title' => 'Calpalyn',
 'default_timezone' => "UTC",
 
 'local_cache' => 'Pfw_Cache_Apc'

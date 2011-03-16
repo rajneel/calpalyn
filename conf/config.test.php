@@ -3,10 +3,10 @@
 'database' => array(
   'default' => array(
     'params' => array(
-      'host'     => '<changeme>',
-      'username' => '<changeme>',
-      'password' => '<changeme>',
-      'dbname'   => '<changeme>',
+      'host'     => 'localhost',
+      'username' => 'neel',
+      'password' => '',
+      'dbname'   => 'calpalyn',
       'adapter'  => 'Mysqli',
       'socket'   => '',
     )

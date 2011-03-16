@@ -13,6 +13,7 @@ class AdminController extends Prj_Controller_Standard
         $view = $this->getView();
         $view->addCssLink('custom-theme/jquery-ui-1.8.10.custom.css');
         $view->addJsLink('jquery-1.4.4.min.js');
+        $view->addJsLink('jquery.dataTables.min.js');
 		#$view->addJsLink('jquery.simplemodal-1.3.4.min.js');
         $view->addJsLink('custom-theme/jquery-ui-1.8.10.custom.min.js');
         #$view->addJsLink('custom-theme/jquery-ui-form.custom.min.js');
