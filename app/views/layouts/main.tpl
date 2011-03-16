@@ -14,17 +14,20 @@
         $( "#calmenu" ).tabs();
     });
 </script>
+<style>
+    body { font-family: Gill Sans,Arial,sans-serif;}
+</style>
 {/literal}
 </head>
 <body>
 <!--- THis is header -->
  <div class="container">
  <div id="header" style="height:65px;">
-		<div id="logo" style="width:150px;font-size:36px;margin-top:25px;">
-            <img src="/img/cal_logo.png" width="30%" valign='bottom' style=''><span id="header_text" style="margin-bottom:11px;">palyn </span>
+		<div id="logo" style="width:150px;font-size:36px;margin-top:15px;">
+            <img src="/img/cal_logo.png" width="30%" valign='bottom' style=''><span id="header_text" style="margin-bottom:21px;">palyn </span>
         </div>
 		<span id="head" style="float:right">
-				Welcome, {if $user}{$user}{else}Roger{/if} | Help | {if $is_logged_in}<a href="/login/logout">Logout</a>{else}<a href="/login">Login</a>{/if}			
+				Welcome, {if $logged_in_user->id}{$logged_in_user->first_name|capitalize}{else}Visitor{/if} | Help | {if $is_logged_in}<a href="/user/logout">Logout</a>{else}<a href="/login">Login</a>{/if}
 		</span>
 		
  </div>
