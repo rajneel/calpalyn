@@ -93,7 +93,6 @@ class UserController extends Prj_Controller_Standard
 
     }
     
-    
     /**
      * Logout
      */
