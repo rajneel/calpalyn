@@ -53,7 +53,17 @@ class ProjectData extends Pfw_Model
         return $pfv->success();
     }
 
-
+    public function getDepths($pid) {
+    
+        $response = self::Q()->where("project_id=".$pid)->exec();
+        
+        foreach ($response as $r) {
+            $depth[]=$r->depth;
+        }
+        #print_r($depth);
+        $depths = array_values(array_unique($depth));
+        return $depths;
+    }
 
     // called when a record is retrieved, before  
     // properties have been assigned to an instance 
@@ -83,6 +93,7 @@ class ProjectData_QueryObject extends Pfw_Model_QueryObject
         $response  = $this->where("project_id=".$pid)->exec();
         foreach ($response as $r) {
             $data[$r->depth][$r->taxon_type]=$r->taxon_value;
+            $chart_data[$r->taxon_type][$r->depth] = $r->taxon_value;
             $f[] = $r->taxon_type;
             $d[] = $r->depth;
         }
@@ -91,9 +102,17 @@ class ProjectData_QueryObject extends Pfw_Model_QueryObject
         $field_names = array_unique($f);
         $depths = array_unique($d);
         error_log("Got all depths for project[$pid] as ".print_r($depths,true));
-        return array('depths'=>array_values($depths),'field_names'=>array_values($field_names),'data'=>$data);
+        return array('depths'=>array_values($depths),'field_names'=>array_values($field_names),'data'=>$data,'chart_data'=>$chart_data);
     }
 
+    public function clearProjectData($pid) {
+        if (empty($pid)) {
+            return false;
+        }
+        $sql = "DELETE FROM project_data where project_id=$pid";
+        Pfw_Db::factory()->query($sql);
+        return true;
+    }
 
 
 } 

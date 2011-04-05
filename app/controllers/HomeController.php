@@ -14,6 +14,8 @@ class HomeController extends Prj_Controller_Standard
         $view->addCssLink('fileuploader.css');
         $view->addJsLink('jquery-1.4.4.min.js');
         $view->addJsLink('jquery.dataTables.min.js');
+        $view->addJsLink('highcharts.js');
+        $view->addJsLink('exporting.js');
         //$view->addJsLink('jquery.jqUploader.js');
         //$view->addJsLink('jquery.flash.js');
 
@@ -40,8 +42,7 @@ class HomeController extends Prj_Controller_Standard
             $d[] = array('id'=>$row->id,
                          'name'=>$row->name,
                          'user_info'=>"<a class='tip' name='#'>".$u[$row->created_by]['first_name']."<span>".$u[$row->created_by]['email']."</span></a>",
-                         'desc'=>$row->description,
-                         'upload'=>($row->has_data)?"<a href='#?pid=".$row->id."'>View</a>":self::_getUploadMarkup($row->id));
+                         'desc'=>$row->description);
             $p[$row->id] = array('name'=>$row->name,'description'=>$row->description);
             error_log(print_r($d,true));
         }
@@ -61,39 +62,53 @@ class HomeController extends Prj_Controller_Standard
         if (isset($_REQUEST['pid']) and !empty($_REQUEST['pid'])) {
             Pfw_Loader::loadModel('ProjectData');
             $key_data = ProjectData::Q()->getKeyValuesForProject($_REQUEST['pid']);
-            $view->assign('field_names',$key_data['field_names']);
+            $chart_data = $key_data['chart_data'];
             
+            foreach ($chart_data as $cdk=>$cdv) {
+               $depth_values = array_keys($cdv);
+               $taxon_values = array_values($cdv);
+               $chart_values[$cdk]=array('depth_min'=>min($depth_values),'depth_max'=>max($depth_values),
+                                         'taxon_min'=>min($taxon_values),'taxon_max'=>max($taxon_values),
+                                         'depths'=>self::_extendedEncode($depth_values, max($depth_values)),
+                                         'taxon_values'=>self::_extendedEncode($taxon_values, max($taxon_values)));
+            }
+            #objp($chart_values);
+            $view->assign('chart_data',$chart_values);
+            $view->assign('field_names',$key_data['field_names']);
             $view->assign('project_data',$key_data['data']);
             $view->assign('project_id',$_REQUEST['pid']);
-            $view->assign('depths',$key_data['depths']);
-            
+            $view->assign('depths',$key_data['depths']);   
             $view->assign('debug',print_r($view->get_template_vars(),true));
         }
         $view->display(array('layout' => 'layouts/main.tpl', 'body' => 'home/index.tpl'));
     }
 
-    private static function _getUploadMarkup($pid) {
-        // @TODO move this to template -- no advantage of it being in code
-        $markup  = <<<EOD
-<div class='upload-ui'>
-<div id='switch'>
-    <div class='b_upload'>
-        <button id='u_button' class='upload-ui' name='u_button'>Upload</button>
-    </div>
-    <div class='f_upload'>
-        <form enctype='multipart/form-data' action='/project/upload' method='POST'>
-            <span id='upload'>
-                <input name='fileToUpload' type='file' />
-                <input type='hidden' name='pid' value=$pid/>
-            </span>
-            <input class='f_upload upload-ui' type='submit' value='Upload' />
-        </form>
-    </div>
-    </div>
-</div>
-EOD;
-        return $markup;
-    }
+    private static function _extendedEncode($arrVals,$maxVal) {
+
+       // Same as simple encoding, but for extended encoding.
+        $EXTENDED_MAP = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.';
+        $EXTENDED_LIST = str_split($EXTENDED_MAP);
+        $EXTENDED_MAP_LENGTH = sizeof($EXTENDED_LIST);
+        //objp($arrVals);
+        //$chartData = 'e:';
+        $maxVal = $maxVal + 5; // set the max larger than max of list
+        $len = sizeof($arrVals);
+        for($i = 0;$i < $len;$i++) {
+            $scaledVal = floor($EXTENDED_MAP_LENGTH * $EXTENDED_MAP_LENGTH * $arrVals[$i]/ $maxVal);
+            //objp($scaledVal);
+            if($scaledVal > (($EXTENDED_MAP_LENGTH * $EXTENDED_MAP_LENGTH) - 1)) {
+                $chartData .= "..";
+            } else if ($scaledVal < 0) {
+                $chartData .= '__';
+            } else {
+                // Calculate first and second digits and add them to the output.
+                $quotient = floor($scaledVal / $EXTENDED_MAP_LENGTH);
+                $remainder = $scaledVal - $EXTENDED_MAP_LENGTH * $quotient;
+                $chartData .= $EXTENDED_LIST[$quotient].$EXTENDED_LIST[$remainder];
+            }
+        }
+        return $chartData;
+  }
 
 
    

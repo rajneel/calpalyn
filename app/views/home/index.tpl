@@ -55,9 +55,9 @@
     .header {
         color:#B12250;
     }
-}
-}
-}
+    .chart {
+        display:block;
+    }
 </style>
 
 <script>
@@ -86,6 +86,58 @@
 		$( "a", ".create" ).click(function() { return false; });
 	});
     
+</script>
+<script>
+    var simpleEncoding =
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+// This function scales the submitted values so that
+// maxVal becomes the highest value.
+function simpleEncode(valueArray,maxValue) {
+  var chartData = ['s:'];
+  for (var i = 0; i < valueArray.length; i++) {
+    var currentValue = valueArray[i];
+    if (!isNaN(currentValue) && currentValue >= 0) {
+    chartData.push(simpleEncoding.charAt(Math.round((simpleEncoding.length-1) *
+      currentValue / maxValue)));
+    }
+      else {
+      chartData.push('_');
+      }
+  }
+  return chartData.join('');
+}
+
+// Same as simple encoding, but for extended encoding.
+var EXTENDED_MAP=
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.';
+var EXTENDED_MAP_LENGTH = EXTENDED_MAP.length;
+function extendedEncode(arrVals, maxVal) {
+  var chartData = 'e:';
+
+  for(i = 0, len = arrVals.length; i < len; i++) {
+    // In case the array vals were translated to strings.
+    var numericVal = new Number(arrVals[i]);
+    // Scale the value to maxVal.
+    var scaledVal = Math.floor(EXTENDED_MAP_LENGTH *
+        EXTENDED_MAP_LENGTH * numericVal / maxVal);
+
+    if(scaledVal > (EXTENDED_MAP_LENGTH * EXTENDED_MAP_LENGTH) - 1) {
+      chartData += "..";
+    } else if (scaledVal < 0) {
+      chartData += '__';
+    } else {
+      // Calculate first and second digits and add them to the output.
+      var quotient = Math.floor(scaledVal / EXTENDED_MAP_LENGTH);
+      var remainder = scaledVal - EXTENDED_MAP_LENGTH * quotient;
+      chartData += EXTENDED_MAP.charAt(quotient) + EXTENDED_MAP.charAt(remainder);
+    }
+  }
+
+  return chartData;
+}
+var charted  = new Array(104,106,108,110,112,114,116,118,120,122,130,132,134,138,140,150,160);
+//alert(extendedEncode(charted,165));
 </script>
 {/literal}
 <div id="home">
@@ -132,6 +184,7 @@
                          <div id='switch'>
                             <div class='b_upload'>
                             <button id='u_button' class='upload-ui' name='u_button'>Start upload</button>
+                             <button id='d_button' class='upload-ui' name='d_button'>Re upload</button>
                             </div>
                             <div class='f_upload'>   
                                 <div id="file-uploader_{$project.id}">
@@ -164,7 +217,7 @@
                 });
             </script>
             {/literal}
-            <h4>PROJECT: {$projects_info.project_id.name | capitalize}</h4>
+            <strong>PROJECT: {$projects_info.project_id.name | capitalize}</strong>
             <table id="list-project-data">
                 <thead>
                     <tr class="header">
@@ -187,6 +240,11 @@
             </table>
             If you see any discrepancy in data, please fix the CSV file and re-upload using the "List Project" menu.
             {/if}
+            <div class="chart">
+                {foreach from=$field_names item=f}
+                <img src="http://chart.apis.google.com/chart?chxt=y,x&chg=50,50,-1,-1&chs=300x225&cht=lxy&chco=3D7930&chxr=0,{$chart_data.$f.depth-min},{$chart_data.$f.depth-max}|1,{$chart_data.$f.taxon-min},{$chart_data.$f.taxon-max}&chd=e:{$chart_data.$f.depths},{$chart_data.$f.taxon_values}&chdlp=l&chg=14.3,-1,1,1&chls=1,4,0&chma=|1,1&chm=B,000000,0,0,0"/>
+                {/foreach}
+            </div>
         </div>
         <h3>Add Project</h3>
         <div class="create">
@@ -200,34 +258,5 @@
     </div>
 </div>
 {literal}
-<script>
-
- $(document).ready(function() {
-         
-       /*oTable = $('#list-projects').dataTable({
-		"bJQueryUI": true,
-        "bProcessing": true,
-        "bServerSide" : true,
-        "bPaginate": false,
-        "bFilter": false,
-		"sAjaxSource": '/project/json-list-projects',
-		"sPaginationType": "full_numbers"
-        }); */
-        $("#upload").jqUploader({
-            debug: 0,
-			background:           "FFFFDF",
-			barColor:             "FFDD00",
-            allowedExt: "*.xls; *.xlsx; *.csv; *.txt",
-			params: {quality:'low', menu: true},
-			allowedExtDescr:      "what you want",
-			validFileMessage:     'Click on Upload!',
-			endMessage:           'and don\'t you come back ;)',
-			hideSubmit:           true,
-			endHtml:             '<strong style="text-decoration:underline">Upload finished!(the filename is now stored in the form as an hidden input field)</strong>'
-        });
-      
- });
-    
-</script>
 
 {/literal}
